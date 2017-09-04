@@ -58,13 +58,13 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     # encoder that uses 1x1 convolutions instead of fully connected layers
     conv_l3 = tf.layers.conv2d(vgg_layer3_out, num_classes, 1, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3),kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     conv_l4 = tf.layers.conv2d(vgg_layer4_out, num_classes, 1, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), kernel_initializer=tf.random_normal_initializer(stddev=0.01))
     conv_l7 = tf.layers.conv2d(vgg_layer7_out, num_classes, 1, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), kernel_initializer=tf.random_normal_initializer(stddev=0.01))
 
 
     # decoder with skip layers
@@ -72,7 +72,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     # upsample
     decode_7 = tf.layers.conv2d_transpose(conv_l7, num_classes, 4, 2, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), kernel_initializer=tf.random_normal_initializer(stddev=0.01))
 
     # skip layer
 
@@ -82,7 +82,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
 
     decode_4 = tf.layers.conv2d_transpose(skip_1, num_classes, 4, 2, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), kernel_initializer=tf.random_normal_initializer(stddev=0.01))
 
     # skip layer
 
@@ -91,7 +91,7 @@ def layers(vgg_layer3_out, vgg_layer4_out, vgg_layer7_out, num_classes):
     # upsample to original image size
     output = tf.layers.conv2d_transpose(skip_2, num_classes, 16, 8, 
                                 padding='same',
-                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3))
+                                kernel_regularizer=tf.contrib.layers.l2_regularizer(1e-3), kernel_initializer=tf.random_normal_initializer(stddev=0.01))
 
     return output 
 
@@ -147,7 +147,7 @@ def train_nn(sess, epochs, batch_size, get_batches_fn, train_op, cross_entropy_l
                            feed_dict={input_image: img, 
                                       correct_label: label,
                                       keep_prob: 0.8,
-                                      learning_rate: 0.00005}) 
+                                      learning_rate: 0.0001}) 
         print("Epoch {}/{}...".format(epoch, epochs),
             "Training Loss: {:.3f}...".format(loss))
              
@@ -156,12 +156,12 @@ tests.test_train_nn(train_nn)
 
 
 def run():
-    num_classes = 2
+    num_classes = 2 
     image_shape = (160, 576)
     data_dir = './data'
     runs_dir = './runs'
-    epochs = 100
-    batch_size = 8 
+    epochs = 10 
+    batch_size = 2 
     tests.test_for_kitti_dataset(data_dir)
 
     # Download pretrained vgg model
